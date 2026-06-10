@@ -242,3 +242,32 @@ function L({ label, children, full }: { label: string; children: any; full?: boo
 function I({ v, on, type = "text" }: { v: string; on: (v: string) => void; type?: string }) {
   return <input type={type} value={v} onChange={(e) => on(e.target.value)} className="w-full rounded-md border border-border bg-surface px-2 py-2 text-sm focus:border-primary focus:outline-none" />;
 }
+
+function StockCell({ product }: { product: any }) {
+  const qc = useQueryClient();
+  const [val, setVal] = useState<string>(String(product.stock_qty ?? 0));
+  const [saving, setSaving] = useState(false);
+  const commit = async (next: number) => {
+    if (next < 0 || Number.isNaN(next)) return;
+    setSaving(true);
+    const { error } = await supabase.from("products").update({ stock_qty: next }).eq("id", product.id);
+    setSaving(false);
+    if (error) return toast.error(error.message);
+    setVal(String(next));
+    qc.invalidateQueries({ queryKey: ["admin-products"] });
+  };
+  const n = Number(val);
+  return (
+    <div className="flex items-center justify-center gap-1">
+      <button disabled={saving} onClick={() => commit(Math.max(0, (product.stock_qty ?? 0) - 1))} className="h-7 w-7 rounded border border-border text-xs hover:border-primary disabled:opacity-50">−</button>
+      <input
+        value={val}
+        onChange={(e) => setVal(e.target.value.replace(/[^0-9]/g, ""))}
+        onBlur={() => { if (n !== product.stock_qty) commit(n); }}
+        onKeyDown={(e) => { if (e.key === "Enter") (e.target as HTMLInputElement).blur(); }}
+        className={`w-14 rounded border border-border bg-surface px-1 py-1 text-center text-xs tabular ${product.stock_qty < 5 ? "text-destructive" : ""}`}
+      />
+      <button disabled={saving} onClick={() => commit((product.stock_qty ?? 0) + 1)} className="h-7 w-7 rounded border border-border text-xs hover:border-primary disabled:opacity-50">+</button>
+    </div>
+  );
+}
