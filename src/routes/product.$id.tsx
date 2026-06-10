@@ -78,6 +78,15 @@ function ProductPage() {
             </>}
           </div>
           <div className="mt-1 text-xs text-muted-foreground">Incl. all taxes</div>
+          <div className="mt-3 text-sm">
+            {p.stock_qty === 0 ? (
+              <span className="rounded bg-destructive/20 px-2 py-1 font-semibold text-destructive">Out of stock</span>
+            ) : p.stock_qty < 5 ? (
+              <span className="rounded bg-yellow-500/20 px-2 py-1 font-semibold text-yellow-500">Only {p.stock_qty} left in stock</span>
+            ) : (
+              <span className="rounded bg-green-500/20 px-2 py-1 font-semibold text-green-500">In stock · {p.stock_qty} available</span>
+            )}
+          </div>
 
           <div className="mt-6 flex items-center gap-3">
             <div className="flex items-center rounded-md border border-border">
