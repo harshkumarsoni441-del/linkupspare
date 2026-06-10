@@ -74,7 +74,7 @@ function ModelForm({ initial, onClose, onSaved }: { initial: any; onClose: () =>
     const payload: any = {
       name: f.name, slug: f.slug, image_url: f.image_url || null,
       year_from: Number(f.year_from), year_to: f.year_to ? Number(f.year_to) : null,
-      variants: f.variants.split(",").map((s) => s.trim()).filter(Boolean),
+      variants: f.variants.split(",").map((s: string) => s.trim()).filter(Boolean),
       sort_order: Number(f.sort_order), active: f.active,
     };
     const op = initial ? supabase.from("models").update(payload).eq("id", initial.id) : supabase.from("models").insert(payload);
