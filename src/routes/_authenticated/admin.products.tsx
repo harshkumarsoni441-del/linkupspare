@@ -103,7 +103,7 @@ function AdminProducts() {
         <table className="w-full text-sm">
           <thead className="bg-surface/50 text-left text-xs uppercase text-muted-foreground">
             <tr>
-              <th className="p-3">Name</th><th className="p-3">Part No.</th><th className="p-3 text-right">Price</th><th className="p-3 text-right">Stock</th><th className="p-3">Status</th><th className="p-3"></th>
+              <th className="p-3">Name</th><th className="p-3">Part No.</th><th className="p-3 text-right">Price</th><th className="p-3 text-center">Stock</th><th className="p-3">Status</th><th className="p-3"></th>
             </tr>
           </thead>
           <tbody>
@@ -114,7 +114,7 @@ function AdminProducts() {
                 <td className="p-3 max-w-xs truncate">{p.name} {p.featured && <span className="ml-1 rounded bg-primary/20 px-1.5 py-0.5 text-[10px] text-primary">FEATURED</span>}</td>
                 <td className="p-3 font-mono text-xs">{p.part_no}</td>
                 <td className="p-3 text-right tabular">{inr(p.price_paise)}</td>
-                <td className={`p-3 text-right tabular ${p.stock_qty < 5 ? "text-destructive" : ""}`}>{p.stock_qty}</td>
+                <td className="p-3"><StockCell product={p} /></td>
                 <td className="p-3"><span className="rounded bg-surface px-2 py-0.5 text-xs">{p.status}</span></td>
                 <td className="p-3 text-right">
                   <button onClick={() => { setEditing(p); setOpen(true); }} className="mr-2 inline-grid h-8 w-8 place-items-center rounded-md border border-border hover:border-primary"><Pencil className="h-3.5 w-3.5" /></button>
