@@ -85,6 +85,22 @@ export function Header() {
           )}
         </div>
       </div>
+
+      {/* Mobile search bar — always visible */}
+      <form
+        className="container mx-auto px-4 pb-3 md:hidden"
+        onSubmit={(e) => { e.preventDefault(); if (q) window.location.assign(`/search?q=${encodeURIComponent(q)}`); }}
+      >
+        <div className="relative w-full">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Search parts, OEM no, model…"
+            className="h-10 w-full rounded-md border border-border bg-surface pl-9 pr-3 text-sm outline-none focus:border-primary"
+          />
+        </div>
+      </form>
     </header>
   );
 }
