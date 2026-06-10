@@ -108,7 +108,7 @@ function ProductPage() {
             <div className="mt-8">
               <h3 className="text-sm font-semibold">Compatible models</h3>
               <div className="mt-2 flex flex-wrap gap-2">
-                {data.models.map((m) => (
+                {data.models.map((m: any) => (
                   <Link key={m.id} to="/models/$slug" params={{ slug: m.slug }} className="rounded-full border border-border px-3 py-1 text-xs hover:border-primary hover:text-primary">{m.name}</Link>
                 ))}
               </div>
