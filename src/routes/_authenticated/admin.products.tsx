@@ -103,7 +103,7 @@ function AdminProducts() {
         <table className="w-full text-sm">
           <thead className="bg-surface/50 text-left text-xs uppercase text-muted-foreground">
             <tr>
-              <th className="p-3">Name</th><th className="p-3">Part No.</th><th className="p-3 text-right">Price</th><th className="p-3 text-right">Stock</th><th className="p-3">Status</th><th className="p-3"></th>
+              <th className="p-3">Name</th><th className="p-3">Part No.</th><th className="p-3 text-right">Price</th><th className="p-3 text-center">Stock</th><th className="p-3">Status</th><th className="p-3"></th>
             </tr>
           </thead>
           <tbody>
@@ -114,7 +114,7 @@ function AdminProducts() {
                 <td className="p-3 max-w-xs truncate">{p.name} {p.featured && <span className="ml-1 rounded bg-primary/20 px-1.5 py-0.5 text-[10px] text-primary">FEATURED</span>}</td>
                 <td className="p-3 font-mono text-xs">{p.part_no}</td>
                 <td className="p-3 text-right tabular">{inr(p.price_paise)}</td>
-                <td className={`p-3 text-right tabular ${p.stock_qty < 5 ? "text-destructive" : ""}`}>{p.stock_qty}</td>
+                <td className="p-3"><StockCell product={p} /></td>
                 <td className="p-3"><span className="rounded bg-surface px-2 py-0.5 text-xs">{p.status}</span></td>
                 <td className="p-3 text-right">
                   <button onClick={() => { setEditing(p); setOpen(true); }} className="mr-2 inline-grid h-8 w-8 place-items-center rounded-md border border-border hover:border-primary"><Pencil className="h-3.5 w-3.5" /></button>
@@ -241,4 +241,33 @@ function L({ label, children, full }: { label: string; children: any; full?: boo
 }
 function I({ v, on, type = "text" }: { v: string; on: (v: string) => void; type?: string }) {
   return <input type={type} value={v} onChange={(e) => on(e.target.value)} className="w-full rounded-md border border-border bg-surface px-2 py-2 text-sm focus:border-primary focus:outline-none" />;
+}
+
+function StockCell({ product }: { product: any }) {
+  const qc = useQueryClient();
+  const [val, setVal] = useState<string>(String(product.stock_qty ?? 0));
+  const [saving, setSaving] = useState(false);
+  const commit = async (next: number) => {
+    if (next < 0 || Number.isNaN(next)) return;
+    setSaving(true);
+    const { error } = await supabase.from("products").update({ stock_qty: next }).eq("id", product.id);
+    setSaving(false);
+    if (error) return toast.error(error.message);
+    setVal(String(next));
+    qc.invalidateQueries({ queryKey: ["admin-products"] });
+  };
+  const n = Number(val);
+  return (
+    <div className="flex items-center justify-center gap-1">
+      <button disabled={saving} onClick={() => commit(Math.max(0, (product.stock_qty ?? 0) - 1))} className="h-7 w-7 rounded border border-border text-xs hover:border-primary disabled:opacity-50">−</button>
+      <input
+        value={val}
+        onChange={(e) => setVal(e.target.value.replace(/[^0-9]/g, ""))}
+        onBlur={() => { if (n !== product.stock_qty) commit(n); }}
+        onKeyDown={(e) => { if (e.key === "Enter") (e.target as HTMLInputElement).blur(); }}
+        className={`w-14 rounded border border-border bg-surface px-1 py-1 text-center text-xs tabular ${product.stock_qty < 5 ? "text-destructive" : ""}`}
+      />
+      <button disabled={saving} onClick={() => commit((product.stock_qty ?? 0) + 1)} className="h-7 w-7 rounded border border-border text-xs hover:border-primary disabled:opacity-50">+</button>
+    </div>
+  );
 }
