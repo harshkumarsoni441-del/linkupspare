@@ -357,6 +357,13 @@ export type Database = {
         Returns: boolean
       }
       promote_admin_by_email: { Args: { _email: string }; Returns: boolean }
+      validate_coupon: {
+        Args: { _code: string; _subtotal_paise: number }
+        Returns: {
+          code: string
+          discount_paise: number
+        }[]
+      }
     }
     Enums: {
       app_role: "admin" | "customer"
