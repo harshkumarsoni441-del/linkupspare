@@ -17,10 +17,12 @@ export type ProductLite = {
 
 export function ProductCard({ p }: { p: ProductLite }) {
   const { has, toggle } = useWishlist();
-  const { add } = useCart();
+  const { add, items, setQty, remove } = useCart();
   const img = p.images?.[0] || placeholderImg(p.part_no);
   const finalP = discounted(p.price_paise, p.discount_pct);
   const wished = has(p.id);
+  const inCart = items.find((i) => i.productId === p.id);
+  const max = p.stock_qty;
 
   return (
     <div className="group glass-card overflow-hidden glow-gold">
@@ -51,16 +53,39 @@ export function ProductCard({ p }: { p: ProductLite }) {
           )}
         </div>
         <div className="mt-3 flex gap-2">
-          <button
-            disabled={p.stock_qty === 0}
-            onClick={() => {
-              add({ productId: p.id, name: p.name, partNo: p.part_no, unitPricePaise: finalP, image: img, qty: 1 });
-              toast.success("Added to cart");
-            }}
-            className="flex-1 rounded-md bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground hover:opacity-90 disabled:opacity-40"
-          >
-            Add to cart
-          </button>
+          {inCart ? (
+            <div className="flex flex-1 items-center justify-between rounded-md border border-primary/40 bg-primary/10 px-2 py-1">
+              <button
+                aria-label="Decrease"
+                onClick={() => {
+                  if (inCart.qty <= 1) { remove(p.id); toast.success("Removed from cart"); }
+                  else setQty(p.id, inCart.qty - 1);
+                }}
+                className="grid h-7 w-7 place-items-center rounded text-primary hover:bg-primary/20"
+              >−</button>
+              <span className="text-sm font-bold text-primary tabular">{inCart.qty}</span>
+              <button
+                aria-label="Increase"
+                disabled={inCart.qty >= max}
+                onClick={() => {
+                  if (inCart.qty >= max) { toast.error(`Only ${max} in stock`); return; }
+                  setQty(p.id, inCart.qty + 1);
+                }}
+                className="grid h-7 w-7 place-items-center rounded text-primary hover:bg-primary/20 disabled:opacity-40"
+              >+</button>
+            </div>
+          ) : (
+            <button
+              disabled={p.stock_qty === 0}
+              onClick={() => {
+                add({ productId: p.id, name: p.name, partNo: p.part_no, unitPricePaise: finalP, image: img, qty: 1 });
+                toast.success("Added to cart");
+              }}
+              className="flex-1 rounded-md bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground hover:opacity-90 disabled:opacity-40"
+            >
+              Add to cart
+            </button>
+          )}
           <button
             aria-label="Wishlist"
             onClick={() => toggle(p.id)}
