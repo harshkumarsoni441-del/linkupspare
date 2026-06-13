@@ -1,0 +1,1 @@
+REVOKE ALL ON FUNCTION public.decrement_product_stock_from_order_item() FROM PUBLIC; REVOKE ALL ON FUNCTION public.decrement_product_stock_from_order_item() FROM anon; REVOKE ALL ON FUNCTION public.decrement_product_stock_from_order_item() FROM authenticated;
