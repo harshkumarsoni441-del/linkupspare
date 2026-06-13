@@ -134,18 +134,6 @@ function HomePage() {
         </section>
       )}
 
-      {/* New arrivals */}
-      {data.newest.length > 0 && (
-        <section className="container mx-auto px-4 py-14">
-          <div className="mb-6 flex items-end justify-between">
-            <h2 className="text-2xl font-bold md:text-3xl">New Arrivals</h2>
-            <Link to="/search" className="text-sm text-primary hover:underline">Browse all →</Link>
-          </div>
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-            {data.newest.map((p) => <ProductCard key={p.id} p={p} />)}
-          </div>
-        </section>
-      )}
 
       {/* Trust strip */}
       <section className="border-y border-border bg-gradient-to-r from-surface via-background to-surface">
