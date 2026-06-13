@@ -6,17 +6,16 @@ export function Footer() {
       <div className="container mx-auto grid gap-8 px-4 py-12 md:grid-cols-4">
         <div>
           <div className="flex items-center gap-2 font-semibold">
-            <span className="grid h-8 w-8 place-items-center rounded-md bg-primary text-primary-foreground font-bold">M</span>
-            <span>Maruti Genuine Parts</span>
+            <span className="grid h-9 w-9 place-items-center rounded-md bg-gradient-to-br from-primary to-amber-500 text-primary-foreground font-black shadow-md shadow-primary/30">L</span>
+            <span className="text-base font-bold tracking-wide">LINKUP SPARES</span>
           </div>
-          <p className="mt-3 text-sm text-muted-foreground">Authorised dealer · 100% genuine OEM parts · Pan-India shipping.</p>
+          <p className="mt-3 text-sm text-muted-foreground">Maruti Suzuki genuine spare parts. OEM-certified, warranty backed, pan-India shipping.</p>
         </div>
         <div>
           <h4 className="text-sm font-semibold">Shop</h4>
           <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
-            <li><Link to="/models" className="hover:text-foreground">Models</Link></li>
             <li><Link to="/categories" className="hover:text-foreground">Categories</Link></li>
-            <li><Link to="/search" className="hover:text-foreground">Search</Link></li>
+            <li><Link to="/search" className="hover:text-foreground">Search Parts</Link></li>
           </ul>
         </div>
         <div>

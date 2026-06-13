@@ -8,7 +8,6 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 const NAV = [
   { to: "/", label: "Home" },
-  { to: "/models", label: "Models" },
   { to: "/categories", label: "Categories" },
   { to: "/search", label: "Search" },
 ];
@@ -34,10 +33,10 @@ export function Header() {
         </Sheet>
 
         <Link to="/" className="flex items-center gap-2 font-semibold tracking-tight">
-          <span className="grid h-9 w-9 place-items-center rounded-md bg-primary text-primary-foreground font-bold">M</span>
+          <span className="grid h-9 w-9 place-items-center rounded-md bg-gradient-to-br from-primary to-amber-500 text-primary-foreground font-black shadow-md shadow-primary/30">L</span>
           <span className="hidden sm:block">
-            <span className="block text-sm leading-tight">Maruti Suzuki</span>
-            <span className="block text-xs leading-tight text-muted-foreground">Genuine Parts</span>
+            <span className="block text-sm font-bold leading-tight tracking-wide">LINKUP SPARES</span>
+            <span className="block text-[10px] uppercase leading-tight text-muted-foreground tracking-wider">Maruti Suzuki Genuine Parts</span>
           </span>
         </Link>
 
