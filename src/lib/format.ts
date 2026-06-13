@@ -6,6 +6,8 @@ export const inr = (paise: number) =>
 export const discounted = (priceP: number, pct: number) =>
   Math.round(priceP * (1 - (pct || 0) / 100));
 
-export function placeholderImg(seed: string) {
-  return `https://picsum.photos/seed/${encodeURIComponent(seed)}/600/400`;
+import maruti from "@/assets/maruti-genuine.png.asset.json";
+
+export function placeholderImg(_seed?: string) {
+  return maruti.url;
 }
