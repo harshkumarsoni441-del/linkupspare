@@ -9,15 +9,16 @@ import heroVideo from "@/assets/hero.mp4.asset.json";
 const homeData = queryOptions({
   queryKey: ["home"],
   queryFn: async () => {
-    const [cats, featured, newest] = await Promise.all([
-      supabase.from("categories").select("id,slug,name,icon,image_url").is("parent_id", null).eq("active", true).order("sort_order"),
+    const [prodCats, allCats, featured] = await Promise.all([
+      supabase.from("products").select("category_id").eq("status", "active").not("category_id", "is", null),
+      supabase.from("categories").select("id,slug,name,icon,image_url,sort_order").is("parent_id", null).eq("active", true).order("sort_order"),
       supabase.from("products").select("id,name,part_no,price_paise,discount_pct,images,stock_qty").eq("status", "active").eq("featured", true).limit(8),
-      supabase.from("products").select("id,name,part_no,price_paise,discount_pct,images,stock_qty").eq("status", "active").gt("stock_qty", 0).order("created_at", { ascending: false }).limit(8),
     ]);
+    const activeIds = new Set((prodCats.data ?? []).map((p: { category_id: string | null }) => p.category_id).filter(Boolean) as string[]);
+    const categories = (allCats.data ?? []).filter((c) => activeIds.has(c.id));
     return {
-      categories: cats.data ?? [],
+      categories,
       featured: (featured.data ?? []) as ProductLite[],
-      newest: (newest.data ?? []) as ProductLite[],
     };
   },
 });
@@ -133,18 +134,6 @@ function HomePage() {
         </section>
       )}
 
-      {/* New arrivals */}
-      {data.newest.length > 0 && (
-        <section className="container mx-auto px-4 py-14">
-          <div className="mb-6 flex items-end justify-between">
-            <h2 className="text-2xl font-bold md:text-3xl">New Arrivals</h2>
-            <Link to="/search" className="text-sm text-primary hover:underline">Browse all →</Link>
-          </div>
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-            {data.newest.map((p) => <ProductCard key={p.id} p={p} />)}
-          </div>
-        </section>
-      )}
 
       {/* Trust strip */}
       <section className="border-y border-border bg-gradient-to-r from-surface via-background to-surface">

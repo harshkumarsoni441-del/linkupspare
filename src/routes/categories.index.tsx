@@ -6,10 +6,17 @@ import { SiteLayout } from "@/components/site/Layout";
 const opts = queryOptions({
   queryKey: ["categories-tree"],
   queryFn: async () => {
-    const { data } = await supabase.from("categories").select("*").eq("active", true).order("sort_order");
-    const tops = (data ?? []).filter((c) => !c.parent_id);
-    const subs = (data ?? []).filter((c) => c.parent_id);
-    return tops.map((t) => ({ ...t, children: subs.filter((s) => s.parent_id === t.id) }));
+    const [catsRes, prodRes] = await Promise.all([
+      supabase.from("categories").select("*").eq("active", true).order("sort_order"),
+      supabase.from("products").select("category_id").eq("status", "active").not("category_id", "is", null),
+    ]);
+    const activeIds = new Set((prodRes.data ?? []).map((p: { category_id: string | null }) => p.category_id).filter(Boolean) as string[]);
+    const all = catsRes.data ?? [];
+    const tops = all.filter((c) => !c.parent_id);
+    const subs = all.filter((c) => c.parent_id);
+    return tops
+      .map((t) => ({ ...t, children: subs.filter((s) => s.parent_id === t.id && activeIds.has(s.id)) }))
+      .filter((t) => activeIds.has(t.id) || t.children.length > 0);
   },
 });
 
