@@ -30,11 +30,11 @@ function CartPage() {
 
   const applyCoupon = async () => {
     if (!coupon) return;
-    const { data } = await supabase.from("coupons").select("*").eq("code", coupon.toUpperCase()).eq("active", true).maybeSingle();
-    if (!data) { toast.error("Invalid coupon"); return; }
-    if (subtotalPaise < data.min_order_paise) { toast.error(`Min order ${inr(data.min_order_paise)}`); return; }
-    const d = data.type === "percent" ? Math.round(subtotalPaise * (data.value / 100)) : Math.round(data.value * 100);
-    setDiscountP(d); setCouponCode(data.code); toast.success(`Applied ${data.code}: -${inr(d)}`);
+    const { data, error } = await supabase.rpc("validate_coupon", { _code: coupon.toUpperCase(), _subtotal_paise: subtotalPaise });
+    const row = (data ?? [])[0];
+    if (error || !row) { toast.error("Invalid or ineligible coupon"); return; }
+    setDiscountP(Number(row.discount_paise)); setCouponCode(row.code);
+    toast.success(`Applied ${row.code}: -${inr(Number(row.discount_paise))}`);
   };
 
   const placeOrder = async () => {
