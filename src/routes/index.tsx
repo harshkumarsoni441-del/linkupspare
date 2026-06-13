@@ -9,15 +9,16 @@ import heroVideo from "@/assets/hero.mp4.asset.json";
 const homeData = queryOptions({
   queryKey: ["home"],
   queryFn: async () => {
-    const [cats, featured, newest] = await Promise.all([
-      supabase.from("categories").select("id,slug,name,icon,image_url").is("parent_id", null).eq("active", true).order("sort_order"),
+    const [prodCats, allCats, featured] = await Promise.all([
+      supabase.from("products").select("category_id").eq("status", "active").not("category_id", "is", null),
+      supabase.from("categories").select("id,slug,name,icon,image_url,sort_order").is("parent_id", null).eq("active", true).order("sort_order"),
       supabase.from("products").select("id,name,part_no,price_paise,discount_pct,images,stock_qty").eq("status", "active").eq("featured", true).limit(8),
-      supabase.from("products").select("id,name,part_no,price_paise,discount_pct,images,stock_qty").eq("status", "active").gt("stock_qty", 0).order("created_at", { ascending: false }).limit(8),
     ]);
+    const activeIds = new Set((prodCats.data ?? []).map((p: { category_id: string | null }) => p.category_id).filter(Boolean) as string[]);
+    const categories = (allCats.data ?? []).filter((c) => activeIds.has(c.id));
     return {
-      categories: cats.data ?? [],
+      categories,
       featured: (featured.data ?? []) as ProductLite[],
-      newest: (newest.data ?? []) as ProductLite[],
     };
   },
 });
