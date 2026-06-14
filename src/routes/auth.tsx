@@ -59,7 +59,8 @@ function AuthPage() {
               <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Full name" required className="w-full rounded-md border border-border bg-surface px-3 py-2 text-sm" />
             )}
             <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" placeholder="Email" required className="w-full rounded-md border border-border bg-surface px-3 py-2 text-sm" />
-            <input value={password} onChange={(e) => setPassword(e.target.value)} type="password" placeholder="Password" minLength={6} required className="w-full rounded-md border border-border bg-surface px-3 py-2 text-sm" />
+            <input value={password} onChange={(e) => setPassword(e.target.value)} type="password" placeholder="Password (letters & numbers, min 6)" minLength={6} pattern="[A-Za-z0-9]{6,}" required className="w-full rounded-md border border-border bg-surface px-3 py-2 text-sm" />
+            {mode === "signup" && <p className="text-[11px] text-muted-foreground">Use only letters (A–Z, a–z) and numbers, at least 6 characters.</p>}
             <button disabled={busy} className="w-full rounded-md bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-90 disabled:opacity-50">
               {busy ? "Please wait…" : (mode === "signin" ? "Sign in" : "Create account")}
             </button>
