@@ -103,7 +103,7 @@ function OrderDetail({ order, onClose }: { order: any; onClose: () => void }) {
         </div>
         <div className="mt-4 space-y-1 text-right text-sm">
           <div>Subtotal: <span className="tabular">{inr(order.subtotal_paise)}</span></div>
-          <div>Tax: <span className="tabular">{inr(order.tax_paise)}</span></div>
+          <div>GST: <span className="tabular">{inr(order.gst_paise ?? 0)}</span></div>
           <div>Shipping: <span className="tabular">{inr(order.shipping_paise)}</span></div>
           {order.discount_paise > 0 && <div>Discount: −<span className="tabular">{inr(order.discount_paise)}</span></div>}
           <div className="text-base font-bold">Total: <span className="tabular text-primary">{inr(order.total_paise)}</span></div>
