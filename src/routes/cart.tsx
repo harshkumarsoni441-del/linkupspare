@@ -23,10 +23,9 @@ function CartPage() {
   const [addr, setAddr] = useState({ name: "", phone: "", email: "", line1: "", city: "", state: "", pincode: "" });
   const [placing, setPlacing] = useState(false);
 
-  const shippingP = subtotalPaise > 100000 || subtotalPaise === 0 ? 0 : 9900;
-  const taxableP = Math.max(0, subtotalPaise - discountP);
-  const gstP = Math.round(taxableP * 0.18);
-  const totalP = taxableP + gstP + shippingP;
+  const shippingP = 0;
+  const gstP = 0;
+  const totalP = Math.max(0, subtotalPaise - discountP);
 
   const applyCoupon = async () => {
     if (!coupon) return;
