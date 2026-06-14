@@ -22,7 +22,12 @@ function AuthPage() {
   useEffect(() => { if (user) nav({ to: "/" }); }, [user, nav]);
 
   const submit = async (e: React.FormEvent) => {
-    e.preventDefault(); setBusy(true);
+    e.preventDefault();
+    if (mode === "signup" && !/^[A-Za-z0-9]{6,}$/.test(password)) {
+      toast.error("Password must be at least 6 characters and contain only letters (A–Z, a–z) and numbers.");
+      return;
+    }
+    setBusy(true);
     try {
       if (mode === "signup") {
         const { error } = await supabase.auth.signUp({
