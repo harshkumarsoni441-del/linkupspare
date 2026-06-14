@@ -116,8 +116,6 @@ function CartPage() {
           <dl className="mt-4 space-y-2 text-sm">
             <div className="flex justify-between"><dt>Subtotal</dt><dd className="tabular">{inr(subtotalPaise)}</dd></div>
             {discountP > 0 && <div className="flex justify-between text-success"><dt>Discount ({couponCode})</dt><dd className="tabular">-{inr(discountP)}</dd></div>}
-            <div className="flex justify-between"><dt>GST 18%</dt><dd className="tabular">{inr(gstP)}</dd></div>
-            <div className="flex justify-between"><dt>Shipping</dt><dd className="tabular">{shippingP === 0 ? "FREE" : inr(shippingP)}</dd></div>
             <div className="mt-2 border-t border-border pt-2 flex justify-between text-base font-bold"><dt>Total</dt><dd className="tabular text-primary">{inr(totalP)}</dd></div>
           </dl>
           <div className="mt-4 flex gap-2">
