@@ -1,6 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import { Check, X, ShieldCheck, GripVertical } from "lucide-react";
-import maruti from "@/assets/maruti-genuine.png.asset.json";
+import airImg from "@/assets/cmp-air.png.asset.json";
+import brakeImg from "@/assets/cmp-brake.png.asset.json";
+import oilImg from "@/assets/cmp-oil.png.asset.json";
+import coolantImg from "@/assets/cmp-coolant.png.asset.json";
+
+const IMAGES: Record<string, string> = {
+  air: airImg.url,
+  brake: brakeImg.url,
+  oil: oilImg.url,
+  coolant: coolantImg.url,
+};
 
 type Tab = {
   id: string;
@@ -255,10 +265,10 @@ function Panel({ side, tab }: { side: "genuine" | "nongenuine"; tab: Tab }) {
       {/* Product image */}
       <div className={`relative z-[1] flex-1 ${isGenuine ? "order-2" : "order-1"} flex items-center justify-center`}>
         <img
-          src={maruti.url}
+          src={IMAGES[tab.id]}
           alt={tab.label}
           className="max-h-[80%] w-auto max-w-[260px] object-contain drop-shadow-[0_20px_30px_rgba(0,0,0,0.6)] md:max-w-[340px]"
-          style={{ filter: isGenuine ? "none" : "grayscale(0.4) brightness(0.85)" }}
+          style={{ filter: isGenuine ? "none" : "grayscale(0.5) brightness(0.85) contrast(0.95)" }}
         />
       </div>
     </div>
