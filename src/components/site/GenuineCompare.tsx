@@ -201,6 +201,8 @@ export function GenuineCompare() {
           <Panel side="nongenuine" tab={tab} />
         </div>
 
+        <CompareProductImages tab={tab} pos={pos} />
+
         {/* Divider */}
         <div
           className="pointer-events-none absolute inset-y-0 z-20 w-px bg-gradient-to-b from-primary via-amber-300 to-primary shadow-[0_0_24px_rgba(245,166,35,0.7)]"
@@ -250,9 +252,27 @@ function Panel({ side, tab }: { side: "genuine" | "nongenuine"; tab: Tab }) {
       {/* Feature list — outside of image, on the appropriate side */}
       <FeatureList side={side} tab={tab} items={items} />
 
-      {/* Product image */}
-      <div className="relative z-[2] col-start-2 row-start-1 flex min-h-0 items-center justify-center overflow-hidden self-stretch">
-        <div className="pointer-events-none absolute inset-y-3 left-1/2 w-[min(52vw,430px)] -translate-x-1/2 rounded-full bg-background/20 blur-3xl" />
+    </div>
+  );
+}
+
+function CompareProductImages({ tab, pos }: { tab: Tab; pos: number }) {
+  return (
+    <>
+      <ProductImageLayer tab={tab} side="genuine" />
+      <div className="pointer-events-none absolute inset-0 z-[8]" style={{ clipPath: `inset(0 0 0 ${pos}%)` }}>
+        <ProductImageLayer tab={tab} side="nongenuine" />
+      </div>
+    </>
+  );
+}
+
+function ProductImageLayer({ tab, side }: { tab: Tab; side: "genuine" | "nongenuine" }) {
+  const isGenuine = side === "genuine";
+  return (
+    <div className="pointer-events-none absolute inset-0 z-[7] grid grid-cols-[minmax(92px,1fr)_minmax(150px,0.78fr)_minmax(92px,1fr)] items-center gap-2 px-3 py-10 md:grid-cols-[minmax(270px,1fr)_minmax(320px,0.82fr)_minmax(270px,1fr)] md:gap-10 md:px-12">
+      <div className="relative col-start-2 row-start-1 flex h-full min-h-0 items-center justify-center overflow-hidden">
+        <div className="absolute inset-y-3 left-1/2 w-[min(52vw,430px)] -translate-x-1/2 rounded-full bg-background/20 blur-3xl" />
         <div
           role="img"
           aria-label={`${isGenuine ? "Genuine" : "Non-Genuine"} ${tab.label}`}
