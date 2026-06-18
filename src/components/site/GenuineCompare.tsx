@@ -256,7 +256,9 @@ function Panel({ side, tab }: { side: "genuine" | "nongenuine"; tab: Tab }) {
         <img
           src={isGenuine ? GENUINE[tab.id] : NONGENUINE[tab.id]}
           alt=""
-          aria-label={`${isGenuine ? "Genuine" : "Non-Genuine"} ${tab.label}`}
+          onError={(event) => {
+            event.currentTarget.style.opacity = "0";
+          }}
           draggable={false}
           className="relative z-[1] block max-h-[68%] w-auto max-w-[145px] object-contain drop-shadow-[0_22px_34px_rgba(0,0,0,0.68)] sm:max-w-[220px] md:max-h-[76%] md:max-w-[340px]"
         />
