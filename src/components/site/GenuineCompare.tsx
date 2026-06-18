@@ -253,14 +253,11 @@ function Panel({ side, tab }: { side: "genuine" | "nongenuine"; tab: Tab }) {
       {/* Product image */}
       <div className="relative z-[2] col-start-2 row-start-1 flex min-h-0 items-center justify-center overflow-hidden self-stretch">
         <div className="pointer-events-none absolute inset-y-3 left-1/2 w-[min(52vw,430px)] -translate-x-1/2 rounded-full bg-background/20 blur-3xl" />
-        <img
-          src={isGenuine ? GENUINE[tab.id] : NONGENUINE[tab.id]}
-          alt=""
-          onError={(event) => {
-            event.currentTarget.style.opacity = "0";
-          }}
-          draggable={false}
-          className="relative z-[1] block max-h-[68%] w-auto max-w-[145px] object-contain drop-shadow-[0_22px_34px_rgba(0,0,0,0.68)] sm:max-w-[220px] md:max-h-[76%] md:max-w-[340px]"
+        <div
+          role="img"
+          aria-label={`${isGenuine ? "Genuine" : "Non-Genuine"} ${tab.label}`}
+          className="relative z-[1] h-[68%] w-full max-w-[145px] bg-contain bg-center bg-no-repeat drop-shadow-[0_22px_34px_rgba(0,0,0,0.68)] sm:max-w-[220px] md:h-[76%] md:max-w-[340px]"
+          style={{ backgroundImage: `url(${isGenuine ? GENUINE[tab.id] : NONGENUINE[tab.id]})` }}
         />
       </div>
     </div>
