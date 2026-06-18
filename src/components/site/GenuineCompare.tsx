@@ -4,12 +4,22 @@ import airImg from "@/assets/cmp-air.png.asset.json";
 import brakeImg from "@/assets/cmp-brake.png.asset.json";
 import oilImg from "@/assets/cmp-oil.png.asset.json";
 import coolantImg from "@/assets/cmp-coolant.png.asset.json";
+import airBad from "@/assets/cmp-air-bad.png.asset.json";
+import brakeBad from "@/assets/cmp-brake-bad.png.asset.json";
+import oilBad from "@/assets/cmp-oil-bad.png.asset.json";
+import coolantBad from "@/assets/cmp-coolant-bad.png.asset.json";
 
-const IMAGES: Record<string, string> = {
+const GENUINE: Record<string, string> = {
   air: airImg.url,
   brake: brakeImg.url,
   oil: oilImg.url,
   coolant: coolantImg.url,
+};
+const NONGENUINE: Record<string, string> = {
+  air: airBad.url,
+  brake: brakeBad.url,
+  oil: oilBad.url,
+  coolant: coolantBad.url,
 };
 
 type Tab = {
