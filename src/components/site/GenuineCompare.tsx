@@ -230,7 +230,7 @@ function Panel({ side, tab }: { side: "genuine" | "nongenuine"; tab: Tab }) {
   const items = isGenuine ? tab.pros : tab.cons;
   return (
     <div
-      className="absolute inset-0 flex items-center justify-between gap-4 px-6 md:px-12"
+      className="absolute inset-0 grid grid-cols-[minmax(92px,1fr)_minmax(150px,0.78fr)_minmax(92px,1fr)] items-center gap-2 px-3 py-10 md:grid-cols-[minmax(270px,1fr)_minmax(320px,0.82fr)_minmax(270px,1fr)] md:gap-10 md:px-12"
       style={{
         background: isGenuine
           ? "linear-gradient(135deg, hsl(160 60% 8%) 0%, hsl(200 60% 12%) 100%)"
@@ -248,38 +248,48 @@ function Panel({ side, tab }: { side: "genuine" | "nongenuine"; tab: Tab }) {
       />
 
       {/* Feature list — outside of image, on the appropriate side */}
-      <ul
-        key={tab.id + side}
-        className={`relative z-[1] flex max-w-[42%] flex-col gap-2 md:gap-3 ${
-          isGenuine ? "" : "order-2 ml-auto text-right"
-        }`}
-      >
-        {items.map((txt, i) => (
-          <li
-            key={txt}
-            className="flex animate-fade-in items-start gap-2 text-[11px] leading-snug text-foreground/90 md:text-sm"
-            style={{ animationDelay: `${i * 80}ms`, animationFillMode: "backwards", flexDirection: isGenuine ? "row" : "row-reverse" }}
-          >
-            <span
-              className={`mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full ${
-                isGenuine ? "bg-emerald-500/20 text-emerald-400" : "bg-rose-500/20 text-rose-400"
-              }`}
-            >
-              {isGenuine ? <Check className="h-3.5 w-3.5" /> : <X className="h-3.5 w-3.5" />}
-            </span>
-            <span>{txt}</span>
-          </li>
-        ))}
-      </ul>
+      <FeatureList side={side} tab={tab} items={items} />
 
       {/* Product image */}
-      <div className={`relative z-[1] flex-1 ${isGenuine ? "order-2" : "order-1"} flex items-center justify-center`}>
+      <div className="relative z-[2] col-start-2 row-start-1 flex min-h-0 items-center justify-center overflow-hidden self-stretch">
+        <div className="pointer-events-none absolute inset-y-3 left-1/2 w-[min(52vw,430px)] -translate-x-1/2 rounded-full bg-background/20 blur-3xl" />
         <img
           src={isGenuine ? GENUINE[tab.id] : NONGENUINE[tab.id]}
-          alt={`${isGenuine ? "Genuine" : "Non-Genuine"} ${tab.label}`}
-          className="max-h-[80%] w-auto max-w-[260px] object-contain drop-shadow-[0_20px_30px_rgba(0,0,0,0.6)] md:max-w-[340px]"
+          alt=""
+          aria-label={`${isGenuine ? "Genuine" : "Non-Genuine"} ${tab.label}`}
+          draggable={false}
+          className="relative z-[1] block max-h-[68%] w-auto max-w-[145px] object-contain drop-shadow-[0_22px_34px_rgba(0,0,0,0.68)] sm:max-w-[220px] md:max-h-[76%] md:max-w-[340px]"
         />
       </div>
     </div>
+  );
+}
+
+function FeatureList({ side, tab, items }: { side: "genuine" | "nongenuine"; tab: Tab; items: string[] }) {
+  const isGenuine = side === "genuine";
+  return (
+    <ul
+      key={tab.id + side}
+      className={`relative z-[3] col-start-1 row-start-1 flex max-w-[230px] flex-col gap-1.5 self-center md:max-w-[290px] md:gap-3 ${
+        isGenuine ? "justify-self-start" : "col-start-3 justify-self-end text-right"
+      }`}
+    >
+      {items.map((txt, i) => (
+        <li
+          key={txt}
+          className="flex animate-fade-in items-start gap-1.5 rounded-md bg-background/24 px-1.5 py-1 text-[9px] leading-snug text-foreground/90 backdrop-blur-sm sm:px-2 sm:text-[10px] md:bg-transparent md:px-0 md:py-0 md:text-sm"
+          style={{ animationDelay: `${i * 80}ms`, animationFillMode: "backwards", flexDirection: isGenuine ? "row" : "row-reverse" }}
+        >
+          <span
+            className={`mt-0.5 grid h-4 w-4 shrink-0 place-items-center rounded-full md:h-5 md:w-5 ${
+              isGenuine ? "bg-emerald-500/20 text-emerald-400" : "bg-rose-500/20 text-rose-400"
+            }`}
+          >
+            {isGenuine ? <Check className="h-3 w-3 md:h-3.5 md:w-3.5" /> : <X className="h-3 w-3 md:h-3.5 md:w-3.5" />}
+          </span>
+          <span>{txt}</span>
+        </li>
+      ))}
+    </ul>
   );
 }
