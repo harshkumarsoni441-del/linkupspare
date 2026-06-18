@@ -135,6 +135,9 @@ function HomePage() {
         </section>
       )}
 
+      <GenuineCompare />
+
+
 
       {/* Trust strip */}
       <section className="border-y border-border bg-gradient-to-r from-surface via-background to-surface">
