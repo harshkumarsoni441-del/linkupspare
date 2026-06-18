@@ -5,6 +5,7 @@ import { SiteLayout } from "@/components/site/Layout";
 import { ProductCard, type ProductLite } from "@/components/site/ProductCard";
 import { ShieldCheck, Truck, Award, Wrench, ArrowRight, Phone } from "lucide-react";
 import heroVideo from "@/assets/hero.mp4.asset.json";
+import { GenuineCompare } from "@/components/site/GenuineCompare";
 
 const homeData = queryOptions({
   queryKey: ["home"],
