@@ -4,12 +4,22 @@ import airImg from "@/assets/cmp-air.png.asset.json";
 import brakeImg from "@/assets/cmp-brake.png.asset.json";
 import oilImg from "@/assets/cmp-oil.png.asset.json";
 import coolantImg from "@/assets/cmp-coolant.png.asset.json";
+import airBad from "@/assets/cmp-air-bad.png.asset.json";
+import brakeBad from "@/assets/cmp-brake-bad.png.asset.json";
+import oilBad from "@/assets/cmp-oil-bad.png.asset.json";
+import coolantBad from "@/assets/cmp-coolant-bad.png.asset.json";
 
-const IMAGES: Record<string, string> = {
+const GENUINE: Record<string, string> = {
   air: airImg.url,
   brake: brakeImg.url,
   oil: oilImg.url,
   coolant: coolantImg.url,
+};
+const NONGENUINE: Record<string, string> = {
+  air: airBad.url,
+  brake: brakeBad.url,
+  oil: oilBad.url,
+  coolant: coolantBad.url,
 };
 
 type Tab = {
@@ -265,10 +275,9 @@ function Panel({ side, tab }: { side: "genuine" | "nongenuine"; tab: Tab }) {
       {/* Product image */}
       <div className={`relative z-[1] flex-1 ${isGenuine ? "order-2" : "order-1"} flex items-center justify-center`}>
         <img
-          src={IMAGES[tab.id]}
-          alt={tab.label}
+          src={isGenuine ? GENUINE[tab.id] : NONGENUINE[tab.id]}
+          alt={`${isGenuine ? "Genuine" : "Non-Genuine"} ${tab.label}`}
           className="max-h-[80%] w-auto max-w-[260px] object-contain drop-shadow-[0_20px_30px_rgba(0,0,0,0.6)] md:max-w-[340px]"
-          style={{ filter: isGenuine ? "none" : "grayscale(0.5) brightness(0.85) contrast(0.95)" }}
         />
       </div>
     </div>
