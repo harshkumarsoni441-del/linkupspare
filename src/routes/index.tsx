@@ -137,10 +137,6 @@ function HomePage() {
         </section>
       )}
 
-      <GenuineCompare />
-
-
-
       {/* Trust strip */}
       <section className="border-y border-border bg-gradient-to-r from-surface via-background to-surface">
         <div className="container mx-auto grid grid-cols-2 gap-6 px-4 py-10 md:grid-cols-4">
