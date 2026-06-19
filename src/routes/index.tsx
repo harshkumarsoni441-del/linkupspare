@@ -100,6 +100,8 @@ function HomePage() {
         <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-b from-transparent to-background" />
       </section>
 
+      <GenuineCompare />
+
       {/* Categories */}
       <section className="container mx-auto px-4 py-14">
         <div className="mb-6 flex items-end justify-between">
@@ -134,10 +136,6 @@ function HomePage() {
           </div>
         </section>
       )}
-
-      <GenuineCompare />
-
-
 
       {/* Trust strip */}
       <section className="border-y border-border bg-gradient-to-r from-surface via-background to-surface">
