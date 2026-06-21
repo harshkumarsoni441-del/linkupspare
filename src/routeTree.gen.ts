@@ -26,6 +26,7 @@ import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/
 import { Route as CategorySlugIndexRouteImport } from './routes/category.$slug.index'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as CategorySlugSubRouteImport } from './routes/category.$slug.$sub'
+import { Route as ApiPublicProductImageRouteImport } from './routes/api/public/product-image'
 import { Route as AuthenticatedAdminProductsRouteImport } from './routes/_authenticated/admin.products'
 import { Route as AuthenticatedAdminOrdersRouteImport } from './routes/_authenticated/admin.orders'
 import { Route as AuthenticatedAdminModelsRouteImport } from './routes/_authenticated/admin.models'
@@ -116,6 +117,11 @@ const CategorySlugSubRoute = CategorySlugSubRouteImport.update({
   path: '/$sub',
   getParentRoute: () => CategorySlugRoute,
 } as any)
+const ApiPublicProductImageRoute = ApiPublicProductImageRouteImport.update({
+  id: '/api/public/product-image',
+  path: '/api/public/product-image',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedAdminProductsRoute =
   AuthenticatedAdminProductsRouteImport.update({
     id: '/products',
@@ -166,6 +172,7 @@ export interface FileRoutesByFullPath {
   '/admin/models': typeof AuthenticatedAdminModelsRoute
   '/admin/orders': typeof AuthenticatedAdminOrdersRoute
   '/admin/products': typeof AuthenticatedAdminProductsRoute
+  '/api/public/product-image': typeof ApiPublicProductImageRoute
   '/category/$slug/$sub': typeof CategorySlugSubRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/category/$slug/': typeof CategorySlugIndexRoute
@@ -187,6 +194,7 @@ export interface FileRoutesByTo {
   '/admin/models': typeof AuthenticatedAdminModelsRoute
   '/admin/orders': typeof AuthenticatedAdminOrdersRoute
   '/admin/products': typeof AuthenticatedAdminProductsRoute
+  '/api/public/product-image': typeof ApiPublicProductImageRoute
   '/category/$slug/$sub': typeof CategorySlugSubRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/category/$slug': typeof CategorySlugIndexRoute
@@ -212,6 +220,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/models': typeof AuthenticatedAdminModelsRoute
   '/_authenticated/admin/orders': typeof AuthenticatedAdminOrdersRoute
   '/_authenticated/admin/products': typeof AuthenticatedAdminProductsRoute
+  '/api/public/product-image': typeof ApiPublicProductImageRoute
   '/category/$slug/$sub': typeof CategorySlugSubRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/category/$slug/': typeof CategorySlugIndexRoute
@@ -237,6 +246,7 @@ export interface FileRouteTypes {
     | '/admin/models'
     | '/admin/orders'
     | '/admin/products'
+    | '/api/public/product-image'
     | '/category/$slug/$sub'
     | '/admin/'
     | '/category/$slug/'
@@ -258,6 +268,7 @@ export interface FileRouteTypes {
     | '/admin/models'
     | '/admin/orders'
     | '/admin/products'
+    | '/api/public/product-image'
     | '/category/$slug/$sub'
     | '/admin'
     | '/category/$slug'
@@ -282,6 +293,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/models'
     | '/_authenticated/admin/orders'
     | '/_authenticated/admin/products'
+    | '/api/public/product-image'
     | '/category/$slug/$sub'
     | '/_authenticated/admin/'
     | '/category/$slug/'
@@ -301,6 +313,7 @@ export interface RootRouteChildren {
   AccountIndexRoute: typeof AccountIndexRoute
   CategoriesIndexRoute: typeof CategoriesIndexRoute
   ModelsIndexRoute: typeof ModelsIndexRoute
+  ApiPublicProductImageRoute: typeof ApiPublicProductImageRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -424,6 +437,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CategorySlugSubRouteImport
       parentRoute: typeof CategorySlugRoute
     }
+    '/api/public/product-image': {
+      id: '/api/public/product-image'
+      path: '/api/public/product-image'
+      fullPath: '/api/public/product-image'
+      preLoaderRoute: typeof ApiPublicProductImageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/admin/products': {
       id: '/_authenticated/admin/products'
       path: '/products'
@@ -522,6 +542,7 @@ const rootRouteChildren: RootRouteChildren = {
   AccountIndexRoute: AccountIndexRoute,
   CategoriesIndexRoute: CategoriesIndexRoute,
   ModelsIndexRoute: ModelsIndexRoute,
+  ApiPublicProductImageRoute: ApiPublicProductImageRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
