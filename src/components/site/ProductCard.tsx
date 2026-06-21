@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Heart } from "lucide-react";
-import { inr, discounted, placeholderImg } from "@/lib/format";
+import { inr, discounted, placeholderImg, proxiedImg } from "@/lib/format";
 import { useWishlist } from "@/lib/wishlist-store";
 import { useCart } from "@/lib/cart-store";
 import { toast } from "sonner";
@@ -18,7 +18,7 @@ export type ProductLite = {
 export function ProductCard({ p }: { p: ProductLite }) {
   const { has, toggle } = useWishlist();
   const { add, items, setQty, remove } = useCart();
-  const img = p.images?.[0] || placeholderImg(p.part_no);
+  const img = proxiedImg(p.images?.[0]) || placeholderImg(p.part_no);
   const finalP = discounted(p.price_paise, p.discount_pct);
   const wished = has(p.id);
   const inCart = items.find((i) => i.productId === p.id);

@@ -2,7 +2,7 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { SiteLayout } from "@/components/site/Layout";
-import { inr, discounted, placeholderImg } from "@/lib/format";
+import { inr, discounted, placeholderImg, proxiedImg } from "@/lib/format";
 import { useCart } from "@/lib/cart-store";
 import { useWishlist } from "@/lib/wishlist-store";
 import { useState } from "react";
@@ -41,7 +41,7 @@ function ProductPage() {
   const { add } = useCart();
   const { has, toggle } = useWishlist();
   const [qty, setQty] = useState(1);
-  const [img, setImg] = useState(p.images?.[0] ?? placeholderImg(p.part_no));
+  const [img, setImg] = useState(proxiedImg(p.images?.[0]) ?? placeholderImg(p.part_no));
   const finalP = discounted(p.price_paise, p.discount_pct);
   const wished = has(p.id);
 
@@ -54,11 +54,14 @@ function ProductPage() {
           </div>
           {p.images?.length > 1 && (
             <div className="mt-3 flex gap-2">
-              {p.images.map((u: string, i: number) => (
-                <button key={i} onClick={() => setImg(u)} className={`h-16 w-16 overflow-hidden rounded border ${img === u ? "border-primary" : "border-border"}`}>
-                  <img src={u} alt={`view ${i+1}`} className="h-full w-full object-cover" onError={(e) => { (e.currentTarget as HTMLImageElement).src = placeholderImg(p.part_no + i); }} />
-                </button>
-              ))}
+              {p.images.map((u: string, i: number) => {
+                const pu = proxiedImg(u);
+                return (
+                  <button key={i} onClick={() => setImg(pu)} className={`h-16 w-16 overflow-hidden rounded border ${img === pu ? "border-primary" : "border-border"}`}>
+                    <img src={pu} alt={`view ${i+1}`} className="h-full w-full object-cover" onError={(e) => { (e.currentTarget as HTMLImageElement).src = placeholderImg(p.part_no + i); }} />
+                  </button>
+                );
+              })}
             </div>
           )}
         </div>
