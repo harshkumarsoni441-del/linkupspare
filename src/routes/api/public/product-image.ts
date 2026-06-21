@@ -30,6 +30,7 @@ export const Route = createFileRoute("/api/public/product-image")({
       GET: async ({ request }) => {
         const sku = new URL(request.url).searchParams.get("sku")?.trim();
         if (!sku) return Response.redirect(new URL(fallback, request.url), 302);
+        if (!/^[a-z0-9-]{3,40}$/i.test(sku)) return Response.redirect(new URL(fallback, request.url), 302);
 
         try {
           const res = await fetch("https://www.marutisuzuki.com/genuine-parts/api/graphql", {
