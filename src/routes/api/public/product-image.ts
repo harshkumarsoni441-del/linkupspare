@@ -24,13 +24,23 @@ const imageQuery = `
   }
 `;
 
+function redirectTo(url: string | URL) {
+  return new Response(null, {
+    status: 302,
+    headers: {
+      Location: String(url),
+      "Cache-Control": "public, max-age=86400, s-maxage=604800",
+    },
+  });
+}
+
 export const Route = createFileRoute("/api/public/product-image")({
   server: {
     handlers: {
       GET: async ({ request }) => {
         const sku = new URL(request.url).searchParams.get("sku")?.trim();
-        if (!sku) return Response.redirect(new URL(fallback, request.url), 302);
-        if (!/^[a-z0-9-]{3,40}$/i.test(sku)) return Response.redirect(new URL(fallback, request.url), 302);
+        if (!sku) return redirectTo(new URL(fallback, request.url));
+        if (!/^[a-z0-9-]{3,40}$/i.test(sku)) return redirectTo(new URL(fallback, request.url));
 
         try {
           const res = await fetch("https://www.marutisuzuki.com/genuine-parts/api/graphql", {
@@ -42,9 +52,9 @@ export const Route = createFileRoute("/api/public/product-image")({
             data?: { productSearch?: { items?: Array<{ productView?: { images?: Array<{ url?: string }> } }> } };
           };
           const img = json.data?.productSearch?.items?.[0]?.productView?.images?.find((i) => i.url)?.url;
-          return Response.redirect(img ?? new URL(fallback, request.url), 302);
+          return redirectTo(img ?? new URL(fallback, request.url));
         } catch {
-          return Response.redirect(new URL(fallback, request.url), 302);
+          return redirectTo(new URL(fallback, request.url));
         }
       },
     },
