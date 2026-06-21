@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-const fallback = "/__l5e/assets-v1/27173a79-4b3b-4336-87fb-cdb17d1ce5bd/maruti-genuine.png";
+const fallback = "/__l5e/assets-v1/ac995ce2-2064-460b-b83d-efa65777c506/maruti-genuine.png";
 
 const headers = {
   "Magento-Environment-Id": "f965c128-4aa4-4044-aaf9-3dcae2ad92b9",
