@@ -116,7 +116,14 @@ function OrderDetail({ order, onClose }: { order: any; onClose: () => void }) {
         <p className="text-sm text-muted-foreground">{new Date(order.created_at).toLocaleString()} · {order.status}</p>
         <div className="mt-4 grid gap-2 text-sm md:grid-cols-2">
           <div><div className="text-xs text-muted-foreground">Customer</div>{order.customer_name}<br />{order.customer_email}<br />{order.customer_phone}</div>
-          <div><div className="text-xs text-muted-foreground">Address</div>{order.address_line1}<br />{order.city}, {order.state} {order.pincode}</div>
+          <div>
+            <div className="text-xs text-muted-foreground">Address</div>
+            {(() => {
+              const a = (order.address ?? {}) as any;
+              return <>{a.line1}<br />{[a.city, a.state].filter(Boolean).join(", ")} {a.pincode}</>;
+            })()}
+          </div>
+
         </div>
         <div className="mt-4">
           <table className="w-full text-sm">
