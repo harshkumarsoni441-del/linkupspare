@@ -91,12 +91,24 @@ function CartPage() {
                   <Link to="/product/$id" params={{ id: i.productId }} className="font-medium hover:text-primary line-clamp-2">{i.name}</Link>
                   <div className="mt-2 flex items-center gap-3">
                     <div className="flex items-center rounded border border-border text-sm">
-                      <button onClick={() => setQty(i.productId, i.qty - 1)} className="px-2 py-1">−</button>
+                      <button onClick={() => setQty(i.productId, i.qty - 1)} className="px-2 py-1 disabled:opacity-40" disabled={i.qty <= 1}>−</button>
                       <span className="w-8 text-center tabular">{i.qty}</span>
-                      <button onClick={() => setQty(i.productId, i.qty + 1)} className="px-2 py-1">+</button>
+                      <button
+                        onClick={() => {
+                          const max = stock[i.productId];
+                          if (max !== undefined && i.qty >= max) { toast.error(`Only ${max} in stock`); return; }
+                          setQty(i.productId, i.qty + 1);
+                        }}
+                        className="px-2 py-1 disabled:opacity-40"
+                        disabled={stock[i.productId] !== undefined && i.qty >= stock[i.productId]!}
+                      >+</button>
                     </div>
                     <button onClick={() => remove(i.productId)} className="text-muted-foreground hover:text-destructive"><Trash2 className="h-4 w-4" /></button>
+                    {stock[i.productId] !== undefined && stock[i.productId]! < i.qty && (
+                      <span className="text-xs text-destructive">Only {stock[i.productId]} left</span>
+                    )}
                   </div>
+
                 </div>
                 <div className="text-right font-semibold tabular">{inr(i.unitPricePaise * i.qty)}</div>
               </div>
