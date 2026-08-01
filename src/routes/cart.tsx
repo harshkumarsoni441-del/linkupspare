@@ -3,13 +3,16 @@ import { SiteLayout } from "@/components/site/Layout";
 import { useCart } from "@/lib/cart-store";
 import { inr, placeholderImg } from "@/lib/format";
 import { Trash2 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
+import { placeOrder as placeOrderFn } from "@/lib/checkout.functions";
 import { useAuth } from "@/lib/auth-store";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/cart")({
-  head: () => ({ meta: [{ title: "Your Cart — Maruti Genuine Parts" }] }),
+  head: () => ({ meta: [{ title: "Your Cart — LINKUP SPARES" }] }),
   component: CartPage,
 });
 
@@ -17,14 +20,23 @@ function CartPage() {
   const { items, setQty, remove, subtotalPaise, clear } = useCart();
   const { user } = useAuth();
   const nav = useNavigate();
+  const submitOrder = useServerFn(placeOrderFn);
   const [coupon, setCoupon] = useState("");
   const [discountP, setDiscountP] = useState(0);
   const [couponCode, setCouponCode] = useState<string | null>(null);
   const [addr, setAddr] = useState({ name: "", phone: "", email: "", line1: "", city: "", state: "", pincode: "" });
   const [placing, setPlacing] = useState(false);
 
-  const shippingP = 0;
-  const gstP = 0;
+  const ids = items.map((i) => i.productId);
+  const { data: stock = {} } = useQuery({
+    queryKey: ["cart-stock", ids.join(",")],
+    enabled: ids.length > 0,
+    queryFn: async () => {
+      const { data } = await supabase.from("products").select("id, stock_qty").in("id", ids);
+      return Object.fromEntries((data ?? []).map((p) => [p.id, p.stock_qty])) as Record<string, number>;
+    },
+  });
+
   const totalP = Math.max(0, subtotalPaise - discountP);
 
   const applyCoupon = async () => {
@@ -37,32 +49,26 @@ function CartPage() {
   };
 
   const placeOrder = async () => {
-    if (!user) { nav({ to: "/auth", search: { next: "/cart" } as any }); return; }
+    if (!user) { nav({ to: "/auth" }); return; }
     if (!addr.name || !addr.phone || !addr.email || !addr.line1 || !addr.pincode) { toast.error("Fill in shipping details"); return; }
+    if (!/^[0-9]{6}$/.test(addr.pincode)) { toast.error("PIN code must be 6 digits"); return; }
     setPlacing(true);
     try {
-      const orderNo = `MGP-${Date.now().toString(36).toUpperCase()}`;
-      const { data: order, error } = await supabase.from("orders").insert({
-        order_no: orderNo, user_id: user.id,
-        customer_name: addr.name, customer_email: addr.email, customer_phone: addr.phone,
-        address: addr, coupon_code: couponCode,
-        subtotal_paise: subtotalPaise, discount_paise: discountP, gst_paise: gstP, shipping_paise: shippingP, total_paise: totalP,
-        status: "pending",
-      }).select().single();
-      if (error) throw error;
-      const rows = items.map((i) => ({
-        order_id: order.id, product_id: i.productId, name: i.name, part_no: i.partNo,
-        qty: i.qty, unit_price_paise: i.unitPricePaise,
-      }));
-      const { error: e2 } = await supabase.from("order_items").insert(rows);
-      if (e2) throw e2;
+      const res = await submitOrder({
+        data: {
+          items: items.map((i) => ({ productId: i.productId, qty: i.qty })),
+          couponCode,
+          address: addr,
+        },
+      });
       clear();
-      toast.success("Order placed! Razorpay integration coming next.");
+      toast.success(`Order ${res.orderNo} placed!`);
       nav({ to: "/account/orders" });
     } catch (e: any) {
-      toast.error(e.message ?? "Failed");
+      toast.error(e?.message ?? "Could not place the order");
     } finally { setPlacing(false); }
   };
+
 
   if (items.length === 0) {
     return <SiteLayout><div className="container mx-auto px-4 py-20 text-center">
@@ -85,12 +91,24 @@ function CartPage() {
                   <Link to="/product/$id" params={{ id: i.productId }} className="font-medium hover:text-primary line-clamp-2">{i.name}</Link>
                   <div className="mt-2 flex items-center gap-3">
                     <div className="flex items-center rounded border border-border text-sm">
-                      <button onClick={() => setQty(i.productId, i.qty - 1)} className="px-2 py-1">−</button>
+                      <button onClick={() => setQty(i.productId, i.qty - 1)} className="px-2 py-1 disabled:opacity-40" disabled={i.qty <= 1}>−</button>
                       <span className="w-8 text-center tabular">{i.qty}</span>
-                      <button onClick={() => setQty(i.productId, i.qty + 1)} className="px-2 py-1">+</button>
+                      <button
+                        onClick={() => {
+                          const max = stock[i.productId];
+                          if (max !== undefined && i.qty >= max) { toast.error(`Only ${max} in stock`); return; }
+                          setQty(i.productId, i.qty + 1);
+                        }}
+                        className="px-2 py-1 disabled:opacity-40"
+                        disabled={stock[i.productId] !== undefined && i.qty >= stock[i.productId]!}
+                      >+</button>
                     </div>
                     <button onClick={() => remove(i.productId)} className="text-muted-foreground hover:text-destructive"><Trash2 className="h-4 w-4" /></button>
+                    {stock[i.productId] !== undefined && stock[i.productId]! < i.qty && (
+                      <span className="text-xs text-destructive">Only {stock[i.productId]} left</span>
+                    )}
                   </div>
+
                 </div>
                 <div className="text-right font-semibold tabular">{inr(i.unitPricePaise * i.qty)}</div>
               </div>

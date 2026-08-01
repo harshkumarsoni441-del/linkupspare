@@ -14,17 +14,27 @@ const STATUSES = ["pending", "paid", "shipped", "delivered", "cancelled", "refun
 function AdminOrders() {
   const qc = useQueryClient();
   const [filter, setFilter] = useState<string>("all");
+  const [q, setQ] = useState("");
   const [open, setOpen] = useState<any | null>(null);
 
   const { data = [], isLoading } = useQuery({
     queryKey: ["admin-orders", filter],
     queryFn: async () => {
-      let q = supabase.from("orders").select("*").order("created_at", { ascending: false }).limit(500);
-      if (filter !== "all") q = q.eq("status", filter);
-      const { data } = await q;
+      let qb = supabase.from("orders").select("*").order("created_at", { ascending: false }).limit(500);
+      if (filter !== "all") qb = qb.eq("status", filter);
+      const { data } = await qb;
       return data ?? [];
     },
   });
+
+  const term = q.trim().toLowerCase();
+  const rows = term
+    ? data.filter((o: any) =>
+        [o.order_no, o.customer_name, o.customer_email, o.customer_phone]
+          .filter(Boolean)
+          .some((v: string) => v.toLowerCase().includes(term)),
+      )
+    : data;
 
   const updateStatus = async (id: string, status: string) => {
     const { error } = await supabase.from("orders").update({ status }).eq("id", id);
@@ -33,15 +43,33 @@ function AdminOrders() {
     qc.invalidateQueries({ queryKey: ["admin-orders"] });
   };
 
+  const deleteOrder = async (id: string, orderNo: string) => {
+    if (!confirm(`Delete order ${orderNo}? This cannot be undone.`)) return;
+    await supabase.from("order_items").delete().eq("order_id", id);
+    const { error } = await supabase.from("orders").delete().eq("id", id);
+    if (error) return toast.error(error.message);
+    toast.success("Order deleted");
+    qc.invalidateQueries({ queryKey: ["admin-orders"] });
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-bold">Orders</h1>
-        <select value={filter} onChange={(e) => setFilter(e.target.value)} className="rounded-md border border-border bg-surface px-3 py-2 text-sm">
-          <option value="all">All statuses</option>
-          {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
-        </select>
+        <div className="flex flex-1 flex-wrap justify-end gap-2">
+          <input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Search order no, name, email, phone…"
+            className="w-full max-w-xs rounded-md border border-border bg-surface px-3 py-2 text-sm"
+          />
+          <select value={filter} onChange={(e) => setFilter(e.target.value)} className="rounded-md border border-border bg-surface px-3 py-2 text-sm">
+            <option value="all">All statuses</option>
+            {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
+          </select>
+        </div>
       </div>
+
       <div className="glass-card mt-4 overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="bg-surface/50 text-left text-xs uppercase text-muted-foreground">
@@ -49,8 +77,8 @@ function AdminOrders() {
           </thead>
           <tbody>
             {isLoading && <tr><td colSpan={6} className="p-6 text-center text-muted-foreground">Loading…</td></tr>}
-            {!isLoading && data.length === 0 && <tr><td colSpan={6} className="p-6 text-center text-muted-foreground">No orders.</td></tr>}
-            {data.map((o: any) => (
+            {!isLoading && rows.length === 0 && <tr><td colSpan={6} className="p-6 text-center text-muted-foreground">No orders.</td></tr>}
+            {rows.map((o: any) => (
               <tr key={o.id} className="border-t border-border">
                 <td className="p-3 font-mono text-xs">{o.order_no}</td>
                 <td className="p-3">{o.customer_name}<div className="text-xs text-muted-foreground">{o.customer_email}</div></td>
@@ -61,9 +89,13 @@ function AdminOrders() {
                   </select>
                 </td>
                 <td className="p-3 text-xs text-muted-foreground">{new Date(o.created_at).toLocaleString()}</td>
-                <td className="p-3 text-right"><button onClick={() => setOpen(o)} className="text-xs text-primary hover:underline">View</button></td>
+                <td className="p-3 text-right">
+                  <button onClick={() => setOpen(o)} className="text-xs text-primary hover:underline">View</button>
+                  <button onClick={() => deleteOrder(o.id, o.order_no)} className="ml-3 text-xs text-destructive hover:underline">Delete</button>
+                </td>
               </tr>
             ))}
+
           </tbody>
         </table>
       </div>
@@ -84,7 +116,14 @@ function OrderDetail({ order, onClose }: { order: any; onClose: () => void }) {
         <p className="text-sm text-muted-foreground">{new Date(order.created_at).toLocaleString()} · {order.status}</p>
         <div className="mt-4 grid gap-2 text-sm md:grid-cols-2">
           <div><div className="text-xs text-muted-foreground">Customer</div>{order.customer_name}<br />{order.customer_email}<br />{order.customer_phone}</div>
-          <div><div className="text-xs text-muted-foreground">Address</div>{order.address_line1}<br />{order.city}, {order.state} {order.pincode}</div>
+          <div>
+            <div className="text-xs text-muted-foreground">Address</div>
+            {(() => {
+              const a = (order.address ?? {}) as any;
+              return <>{a.line1}<br />{[a.city, a.state].filter(Boolean).join(", ")} {a.pincode}</>;
+            })()}
+          </div>
+
         </div>
         <div className="mt-4">
           <table className="w-full text-sm">
