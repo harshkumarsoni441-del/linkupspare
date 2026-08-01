@@ -77,8 +77,8 @@ function AdminOrders() {
           </thead>
           <tbody>
             {isLoading && <tr><td colSpan={6} className="p-6 text-center text-muted-foreground">Loading…</td></tr>}
-            {!isLoading && data.length === 0 && <tr><td colSpan={6} className="p-6 text-center text-muted-foreground">No orders.</td></tr>}
-            {data.map((o: any) => (
+            {!isLoading && rows.length === 0 && <tr><td colSpan={6} className="p-6 text-center text-muted-foreground">No orders.</td></tr>}
+            {rows.map((o: any) => (
               <tr key={o.id} className="border-t border-border">
                 <td className="p-3 font-mono text-xs">{o.order_no}</td>
                 <td className="p-3">{o.customer_name}<div className="text-xs text-muted-foreground">{o.customer_email}</div></td>
@@ -89,9 +89,13 @@ function AdminOrders() {
                   </select>
                 </td>
                 <td className="p-3 text-xs text-muted-foreground">{new Date(o.created_at).toLocaleString()}</td>
-                <td className="p-3 text-right"><button onClick={() => setOpen(o)} className="text-xs text-primary hover:underline">View</button></td>
+                <td className="p-3 text-right">
+                  <button onClick={() => setOpen(o)} className="text-xs text-primary hover:underline">View</button>
+                  <button onClick={() => deleteOrder(o.id, o.order_no)} className="ml-3 text-xs text-destructive hover:underline">Delete</button>
+                </td>
               </tr>
             ))}
+
           </tbody>
         </table>
       </div>
